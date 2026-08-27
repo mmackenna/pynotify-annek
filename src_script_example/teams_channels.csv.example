@@ -1,3 +1,0 @@
-channel_name,webhook_env_var
-PreProd Status,PYNOTIFY_PREPROD_WEBHOOK_URL
-QA Status,PYNOTIFY_QA_WEBHOOK_URL
