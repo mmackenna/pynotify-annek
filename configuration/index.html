@@ -366,6 +366,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -382,6 +400,36 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#local-webhook-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local webhook file
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -434,6 +482,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#local-webhook-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local webhook file
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -453,8 +520,8 @@
 
 
 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
-<p>The channel CSV contains display names and the names of environment variables,
-not webhook URLs:</p>
+<p>The recommended channel CSV contains display names and the names of environment
+variables, not webhook URLs:</p>
 <div class="highlight"><pre><span></span><code>channel_name,webhook_env_var
 PreProd Status,PYNOTIFY_PREPROD_WEBHOOK_URL
 QA Status,PYNOTIFY_QA_WEBHOOK_URL
@@ -467,8 +534,15 @@ through your shell or secret manager:</p>
 pynotify
 </code></pre></div>
 <p>Use <code>--channels /path/to/channels.csv</code> or <code>PYNOTIFY_CHANNELS_FILE</code> to select a
-different file. The application rejects CSV files that use a <code>webhook_url</code>
-column, preventing accidental use of URL-bearing channel lists.</p>
+different file.</p>
+<h2 id="local-webhook-file">Local webhook file<a class="headerlink" href="#local-webhook-file" title="Permanent link">&para;</a></h2>
+<p>For compatibility with existing configurations, <code>pynotify</code> also accepts a local
+CSV with <code>channel_name,webhook_url</code> columns. Keep this file outside the project,
+do not commit it, and restrict it to your account:</p>
+<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">XDG_CONFIG_HOME</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.config</span><span class="si">}</span><span class="s2">/pynotify/channels.csv"</span>
+</code></pre></div>
+<p>Each CSV must use exactly one credential source: <code>webhook_env_var</code> or
+<code>webhook_url</code>, never both.</p>
 
 
 
