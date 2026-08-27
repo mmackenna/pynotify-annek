@@ -1,0 +1,49 @@
+[project]
+name = "pynotify-annek"
+version = "0.1.0"
+description = "A terminal UI for sending Teams status notifications"
+authors = [
+    {name = "Michael MacKenna",email = "mmackenna@unitedfiregroup.com"}
+]
+license = "MIT"
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "textual (>=8.2.8,<9.0.0)"
+]
+
+[project.scripts]
+pynotify = "pynotify.app:main"
+
+[dependency-groups]
+dev = [
+    "mkdocs>=1.6.1,<2.0.0",
+    "mkdocs-material>=9.5.44,<10.0.0",
+    "mkdocstrings[python]>=0.27.0,<1.0.0",
+    "mypy>=1.13.0,<2.0.0",
+    "pytest>=8.3.3,<9.0.0",
+    "pytest-cov>=6.0.0,<7.0.0",
+    "ruff>=0.8.0,<1.0.0",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+exclude = ["teams_channels.csv"]
+packages = [{ include = "pynotify", from = "src" }]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=pynotify --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true

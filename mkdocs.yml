@@ -1,0 +1,49 @@
+site_name: pynotify
+site_description: A Textual UI for sending Teams status notifications
+repo_url: https://github.com/mmackenna/pynotify-annek
+repo_name: mmackenna/pynotify-annek
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+    - search.suggest
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            docstring_style: google
+            merge_init_into_class: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Configuration: configuration.md
+  - API Reference: reference.md
