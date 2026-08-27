@@ -19,10 +19,11 @@ from textual.widgets import Button, Footer, Header, Input, Label, SelectionList,
 
 @dataclass(frozen=True)
 class Channel:
-    """A channel name and the environment variable containing its webhook."""
+    """A channel name and one local source for its webhook URL."""
 
     name: str
-    webhook_env_var: str
+    webhook_env_var: str | None = None
+    webhook_url: str | None = None
 
 
 class ChannelConfigurationError(ValueError):
@@ -36,20 +37,33 @@ def default_channels_path() -> Path:
 
 
 def load_channels(path: Path) -> list[Channel]:
-    """Load a credential-free channel list from a CSV file."""
+    """Load channels using either an environment variable or local webhook URL."""
     try:
         with path.open(newline="", encoding="utf-8") as csv_file:
             reader = csv.DictReader(csv_file)
-            if reader.fieldnames is None or not {"channel_name", "webhook_env_var"} <= set(reader.fieldnames):
+            if reader.fieldnames is None or "channel_name" not in reader.fieldnames:
                 raise ChannelConfigurationError(
-                    f"{path} must have channel_name and webhook_env_var columns; "
-                    "never put webhook URLs in this file."
+                    f"{path} must have a channel_name column and either webhook_env_var or webhook_url."
                 )
-            channels = [
-                Channel(row["channel_name"].strip(), row["webhook_env_var"].strip())
-                for row in reader
-                if row["channel_name"].strip() and row["webhook_env_var"].strip()
-            ]
+            has_env_var = "webhook_env_var" in reader.fieldnames
+            has_url = "webhook_url" in reader.fieldnames
+            if has_env_var == has_url:
+                raise ChannelConfigurationError(
+                    f"{path} must include exactly one of webhook_env_var or webhook_url."
+                )
+            channels = []
+            for row in reader:
+                name = row["channel_name"].strip()
+                source = row["webhook_env_var" if has_env_var else "webhook_url"].strip()
+                if not name or not source:
+                    continue
+                channels.append(
+                    Channel(
+                        name,
+                        webhook_env_var=source if has_env_var else None,
+                        webhook_url=source if has_url else None,
+                    )
+                )
     except OSError as error:
         raise ChannelConfigurationError(f"Could not read channel configuration {path}: {error}") from error
 
@@ -145,9 +159,12 @@ class NotifyApp(App[None]):
     def send_messages(self, selected: list[str], heading: str, message: str) -> None:
         failures: list[str] = []
         for name in selected:
-            webhook_url = os.environ.get(self.channels[name].webhook_env_var)
+            channel = self.channels[name]
+            webhook_url = channel.webhook_url or (
+                os.environ.get(channel.webhook_env_var) if channel.webhook_env_var else None
+            )
             if not webhook_url:
-                failures.append(f"{name}: {self.channels[name].webhook_env_var} is not set")
+                failures.append(f"{name}: {channel.webhook_env_var} is not set")
                 continue
             try:
                 post_message(webhook_url, heading, message)
@@ -177,7 +194,7 @@ def parse_args() -> argparse.Namespace:
             if "PYNOTIFY_CHANNELS_FILE" in os.environ
             else default_channels_path()
         ),
-        help="Credential-free channel CSV path (default: %(default)s or $PYNOTIFY_CHANNELS_FILE).",
+        help="Channel CSV path (default: %(default)s or $PYNOTIFY_CHANNELS_FILE).",
     )
     return parser.parse_args()
 

@@ -32,9 +32,10 @@ poetry run pynotify
 ```
 
 Use `--channels /path/to/channels.csv` or `PYNOTIFY_CHANNELS_FILE` to use a
-different channel list. The application never reads webhook URLs from the CSV;
-this lets the channel list be safely committed or distributed without granting
-access to private channels.
+different channel list. For compatibility, it also accepts a local
+`channel_name,webhook_url` CSV. Keep that file outside the repository, do not
+commit it, and set its permissions to `600`. The environment-variable format is
+recommended because its channel list can be safely committed or distributed.
 
 ## Development
 

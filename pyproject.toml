@@ -1,6 +1,6 @@
 [project]
 name = "pynotify-annek"
-version = "0.1.0"
+version = "0.1.1"
 description = "A terminal UI for sending Teams status notifications"
 authors = [
     {name = "Michael MacKenna",email = "mmackenna@unitedfiregroup.com"}

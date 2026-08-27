@@ -18,11 +18,21 @@ def test_load_channels_reads_credential_free_configuration(tmp_path: Path) -> No
     assert load_channels(channels_file)[0].name == "QA Status"
 
 
-def test_load_channels_rejects_webhook_urls(tmp_path: Path) -> None:
+def test_load_channels_reads_local_webhook_configuration(tmp_path: Path) -> None:
     channels_file = tmp_path / "channels.csv"
     channels_file.write_text("channel_name,webhook_url\nQA Status,https://secret.example\n", encoding="utf-8")
 
-    with pytest.raises(ChannelConfigurationError, match="webhook_env_var"):
+    assert load_channels(channels_file)[0].webhook_url == "https://secret.example"
+
+
+def test_load_channels_rejects_ambiguous_configuration(tmp_path: Path) -> None:
+    channels_file = tmp_path / "channels.csv"
+    channels_file.write_text(
+        "channel_name,webhook_env_var,webhook_url\nQA Status,PYNOTIFY_QA_WEBHOOK_URL,https://secret.example\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ChannelConfigurationError, match="exactly one"):
         load_channels(channels_file)
 
 

@@ -1,7 +1,7 @@
 # Configuration
 
-The channel CSV contains display names and the names of environment variables,
-not webhook URLs:
+The recommended channel CSV contains display names and the names of environment
+variables, not webhook URLs:
 
 ```csv
 channel_name,webhook_env_var
@@ -20,5 +20,17 @@ pynotify
 ```
 
 Use `--channels /path/to/channels.csv` or `PYNOTIFY_CHANNELS_FILE` to select a
-different file. The application rejects CSV files that use a `webhook_url`
-column, preventing accidental use of URL-bearing channel lists.
+different file.
+
+## Local webhook file
+
+For compatibility with existing configurations, `pynotify` also accepts a local
+CSV with `channel_name,webhook_url` columns. Keep this file outside the project,
+do not commit it, and restrict it to your account:
+
+```sh
+chmod 600 "${XDG_CONFIG_HOME:-$HOME/.config}/pynotify/channels.csv"
+```
+
+Each CSV must use exactly one credential source: `webhook_env_var` or
+`webhook_url`, never both.
